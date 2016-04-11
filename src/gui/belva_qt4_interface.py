@@ -37,7 +37,7 @@
 #--------------------------------------------------------------------------------------------------
 
 
-import os, time, sys, sqlite3
+import os, time, datetime, sys, sqlite3
 from PyQt4 import QtGui
 
 # converted Qt4 UI from Qt Converter & cmd; pyuic4 design.ui -o design.py
@@ -153,6 +153,9 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
             global_gui_status_msgs = self.textBrowser_status_msgs
             global_gui_status_msgs_brief = self.textBrowser_status_msgs_brief
             global_gui_progressBar = self.progressBar
+
+            start_time = time.time()
+# your code
             
 #            global_gui_status_msgs, global_gui_status_msgs_brief, global_gui_progressBar, 
             #------------------------------------
@@ -284,7 +287,7 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
             #------------------------------------
             # Set progress bar for end user info
             #------------------------------------
-
+ 
             self.progressBar.setMinimum(0)
             self.progressBar.setMaximum(int(total_word_count))
             self.progressBar.setValue(0)
@@ -330,9 +333,12 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
             #    process large files
             #------------------------------------
             self.textBrowser_status_msgs_brief.clear()
-            self.textBrowser_status_msgs.append("Now processing large files...")
-            for full_path in large_filename_dict:
 
+            if large_filename_dict:
+                self.textBrowser_status_msgs.append("Now processing large files...")
+
+            for full_path in large_filename_dict:
+                
                 with open(full_path, 'r',  errors='replace') as f:
                     for i, l in enumerate(f):
                         pass
@@ -355,7 +361,7 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
 
                     count = self.progressBar.value() + 1
                     self.progressBar.setValue(count)
-                    self.textBrowser_status_msgs_brief.setText("Now processing up to word " + str(count) + " of " + str(total_word_count) + " : " + str(line).strip())
+                    self.textBrowser_status_msgs_brief.setText("Processing through word " + str(count) + " of " + str(total_word_count) + " : " + str(line).strip())
 
                     if str(line).strip():
                         if not(str(line).strip() in remove_common_words):
@@ -377,11 +383,15 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
 
 
             # total word count for output file...
+            total_word_count = -1
             with open(output_file, 'r',  errors='replace') as f:
-                for i, l in enumerate(f):
+                for total_word_count, l in enumerate(f):
                     pass
-            total_word_count = i + 1
 
+            if total_word_count == -1:
+                total_word_count = 0
+
+            elapsed_time = time.time() - start_time
                     
 
             self.textBrowser_status_msgs_brief.clear()
@@ -396,6 +406,10 @@ class BELVA_AppUI(QtGui.QMainWindow, src.gui.design.Ui_MainWindow):
             self.textBrowser_status_msgs.append("Please Find the final custom dictionary here:")
             self.textBrowser_status_msgs.append(output_file)          
             self.textBrowser_status_msgs.append("Total number of words in output file: " + str(total_word_count))
+
+            self.textBrowser_status_msgs.append("Elapsed run time: " + str(datetime.timedelta(seconds=int(elapsed_time))))
+
+
             self.textBrowser_status_msgs.append("FINISHED!!!")
 
 

@@ -37,46 +37,40 @@
 #--------------------------------------------------------------------------------------------------
 
 
-from src.threadQueue.aptQueue import queue_cmd
+import os.path, sys
 
-from src.belvaCommonRoutines import iterative_function
-from src.belvaCommonRoutines import get_positions
 
-#---------------------------------------------------------------------------------
-def send_words_to_queue(words_array, subsitution_dictionary, policy_mutate_plugin_names, policy_select_plugin_names, output_file):
-#---------------------------------------------------------------------------------
 
-    queue_ds_array = []
-    
-    for word in words_array:
+class About():
+    def run(self):
+
+        status_dict = {}
+
+        status_dict['active'] = True        
+#        status_dict['active'] = False
+
+        return status_dict
+
+
+class Description():
+    def run(self):
+
+
+        DescriptionDetails = {}
+        DescriptionDetails['name'] = "Select Words >= 6 & <= 15 in Length"
         
-        queue_word_ds = {}
+        return DescriptionDetails
+
+
+
+class CheckWord():
+    def run(self, word):
+
+        #always return true if passed the checks
+        #always return false if didn't pass checks
         
-        queue_word_ds["word"] = str(word).strip()
-        queue_word_ds["subsitution_dictionary"] = subsitution_dictionary
-        queue_word_ds["policy_mutate_plugin_names"] = policy_mutate_plugin_names
-        queue_word_ds["policy_select_plugin_names"] = policy_select_plugin_names
-        queue_word_ds["output_file"] = output_file
+        if ((int(len(word)) >= 6) and (int(len(word))) <= 15):
+            return True
 
-        
-        queue_ds_array.append(queue_word_ds)
-
-    if queue_ds_array:
-        queue_cmd(process_word, queue_ds_array, 100)
-
-
-
-#---------------------------------------------------------------------------------
-def process_word(queue_word_ds):
-#---------------------------------------------------------------------------------
-
-    word = queue_word_ds["word"]
-    subsitution_dictionary = queue_word_ds["subsitution_dictionary"]
-    policy_mutate_plugin_names = queue_word_ds["policy_mutate_plugin_names"]
-    policy_select_plugin_names = queue_word_ds["policy_select_plugin_names"]
-    output_file = queue_word_ds["output_file"]
-
-#    print("process_word: " + str(word))
-    positions_ds = get_positions(str(word).strip(), subsitution_dictionary)
-    iterative_function(0, positions_ds, str(word).strip(), "", policy_mutate_plugin_names, policy_select_plugin_names, output_file)
-
+        # no checks
+        return False
